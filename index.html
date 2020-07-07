@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.0/lottie.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <title>Find Me!</title>
 </head>
@@ -14,18 +15,43 @@
     <div class="div-navbar">
         <div class="navbar">
             <a class="active" href="#logo">Find Me Visualizer</a>
-            <a href="#contact" id="random-pattern">Random pattern</a>
-            <div class="dropdown">
-                <button class="dropbtn" id="drp-algorithms">Algorithms
-                    <i data-feather="chevron-down" class="icon" id="icon-algorithms"></i>
-                </button>
-                <div class="dropdown-content">
-                    <a href="#">BFS</a>
-                    <a href="#" id="btn-dfs">DFS</a>
-                    <a href="#">Djikstra</a>
+            <div class="menu-items">
+
+                <a href="#random" id="random-pattern">Random pattern</a>
+                <div class="dropdown">
+                    <button class="dropbtn item-with-icon" id="drp-algorithms">Algorithms
+                        <i data-feather="chevron-down" class="icon" id="icon-algorithms"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#" class="item-algorithm">Djikstra</a>
+                        <a href="#" class="item-algorithm">BFS</a>
+                        <a href="#" class="item-algorithm">DFS</a>
+                    </div>
+                </div>
+                <a href="#visualize" id="visualize">Visualize</a>
+                <a href="#clear" id="clear" class="item-with-icon">Clear
+                    <i class="custom-icon icon-trash" id="lottie"></i>
+                </a>
+                <div class="dropdown">
+                    <button class="dropbtn item-with-icon" id="drp-speed">Speed
+                        <i class="custom-icon" id="icon-speed"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#" class="item-speed">
+                            <i class="custom-icon icon-turtle icon-item-speed"></i>
+                            Turtle
+                        </a>
+                        <a href="#" class="item-speed">
+                            <i class="custom-icon icon-dog icon-item-speed"></i>
+                            Dog
+                        </a>
+                        <a href="#" class="item-speed">
+                            <i class="custom-icon icon-bolt icon-item-speed"></i>
+                            Lightning
+                        </a>
+                    </div>
                 </div>
             </div>
-            <a href="#about" id="visualize">Visualize</a>
         </div>
     </div>
     <div class="div-grid">
