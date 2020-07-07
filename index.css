@@ -8,7 +8,7 @@ body {
     --visited-node-bg-color: #3099c2;
     --destination-node-bg-color: #d9ff00;
     --blocked-node-bg-color: #000000;
-    --path-node-bg-color: #5bc5f6;
+    --path-node-bg-color: #e8fd6d;
 }
 
 .navbar {
@@ -26,18 +26,64 @@ body {
     margin-left: 40px;
 }
 
-.navbar a:hover {
-    background-color: var(--primary-bg-color);
+.dropdown {
+    float: left;
+    overflow: hidden;
+    margin-left: 40px;
 }
 
-.navbar a.active {
-    background-color: var(--primary-bg-color);
+.dropdown .dropbtn {
+    font-size: 20px;
+    border: none;
+    outline: none;
     color: white;
+    padding: 10px 16px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+}
+
+.navbar a:hover,
+.dropdown:hover .dropbtn {
+    background-color: #34495E;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 
 .navbar a#visualize {
     background-color: var(--primary-bg-color);
     color: white;
+}
+
+.icon {
+    position: relative;
+    /* Adjust these values accordingly */
+    top: 5px;
+    left: 5px;
 }
 
 table#matrix {
@@ -56,8 +102,8 @@ td.node {
 
 td.start-node {
     background: var(--start-node-bg-color);
-    background-size:cover;
-    background-image: url("icons8-running-rabbit-40.png");
+    background-size: cover;
+    background-image: url("./assets/icons8-running-rabbit-40.png");
 }
 
 td.visited-node {
@@ -68,11 +114,12 @@ td.visited-node {
 
 td.destination-node {
     background: var(--destination-node-bg-color);
-    background-size:cover;
-    background-image: url("icons8-carrot-40.png")
+    background-size: cover;
+    background-image: url("./assets/icons8-carrot-40.png")
 }
 
 td.blocked-node {
+    animation: gradientBlocked 100ms ease-in;
     background: var(--blocked-node-bg-color);
 }
 
@@ -138,5 +185,21 @@ td.path-node {
     100% {
         color: #fff;
         background: linear-gradient(to right, rgba(255, 238, 4) 99%, #fff 100%, #fff 100%);
+    }
+}
+
+@keyframes gradientBlocked {
+    0% {
+        background: radial-gradient(circle at center, var(--blocked-node-bg-color) 0%, #fff 33%, #fff 100%);
+    }
+    33% {
+        background: radial-gradient(circle at center, var(--blocked-node-bg-color) 33%, #fff 66%, #fff 100%);
+    }
+    66% {
+        background: radial-gradient(circle at center, var(--blocked-node-bg-color) 66%, #fff 99%, #fff 100%);
+    }
+    100% {
+        color: #fff;
+        background: radial-gradient(circle at center, var(--blocked-node-bg-color) 99%, #fff 100%, #fff 100%);
     }
 }
