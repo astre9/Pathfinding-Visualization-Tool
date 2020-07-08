@@ -10,6 +10,7 @@ body {
     --destination-node-bg-color: #d9ff00;
     --blocked-node-bg-color: #000000;
     --path-node-bg-color: #e8fd6d;
+    --a-hover-bg-color: #26d844;
 }
 
 .navbar {
@@ -87,9 +88,8 @@ body {
 }
 
 .navbar a#visualize:hover {
-    background-color: var(--white-bg-color);
+    background-color: var(--a-hover-bg-color);
     font-weight: bold;
-    color: var(--primary-bg-color);
 }
 
 .icon {
@@ -168,7 +168,7 @@ td.blocked-node {
 }
 
 td.path-node {
-    border: 1px solid var(--path-node-bg-color);
+    border: 1px solid #FFF;
     background: var(--path-node-bg-color);
     animation: gradientPath 10ms;
 }

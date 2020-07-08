@@ -1,9 +1,12 @@
 const nrRows = 31;
 const nrNodesPerRow = 70;
 const totalNodes = nrRows * nrNodesPerRow;
-const visitingTime = 10;
-
 const algorithms = ["Djikstra", "BFS", "DFS"];
+const speeds = [{ name: "Turtle", value: 50 }, { name: "Dog", value: 25 }, { name: "Lightning", value: 1 }];
+
+var speed = 50;
+var pathCreationSpeed = 10;
+var play = false;
 
 window.onload = function () {
     feather.replace()
@@ -16,7 +19,18 @@ window.onload = function () {
     for (let i = 0; i < algorithmItems.length; i++) {
         algorithmItems[i].onclick = function (ev) {
             selectedAlgorithm = i;
-            document.querySelector("#visualize").innerHTML = "Visualize " + algorithms[i];
+            document.querySelector("#visualize").innerHTML = "Visualize " + algorithms[i] +
+                "<i class='custom-icon icon-visualize' id='lottie'></i>";
+            loadPlayAnimation();
+        };
+    }
+
+    let speedItems = document.getElementsByClassName("item-speed");
+
+    for (let i = 0; i < speedItems.length; i++) {
+        speedItems[i].onclick = function (ev) {
+            speed = speeds[i].value;
+            document.querySelector(".text-speed").innerHTML = speeds[i].name;
         };
     }
 
@@ -24,12 +38,16 @@ window.onload = function () {
 
     let btnVisualize = document.getElementById("visualize");
     btnVisualize.onclick = async () => {
-        if (selectedAlgorithm == 0) {
+        if (play) {
+            if (selectedAlgorithm == 0) {
 
-        } else if (selectedAlgorithm == 1) {
-            visualizeBFS(nodesMatrix);
-        } else if (selectedAlgorithm == 2) {
-            visualizeDFS(nodesMatrix);
+            } else if (selectedAlgorithm == 1) {
+                visualizeBFS(nodesMatrix);
+            } else if (selectedAlgorithm == 2) {
+                visualizeDFS(nodesMatrix);
+            }
+        } else {
+            window.location.reload();
         }
     }
 
@@ -93,16 +111,19 @@ function initGrid() {
     }
     return { nodesMatrix: nodesMatrix, visited: visited };
 }
-
-function initAnimations() {
-    var animationTrash = bodymovin.loadAnimation({
-        container: document.getElementsByClassName('icon-trash')[0], // Required
-        path: './assets/trash-V2.json', // Required
+function initAnimation(container, path, name) {
+    var animation = bodymovin.loadAnimation({
+        container: container, // Required
+        path: path, // Required
         renderer: 'svg', // Required
         loop: false, // Optional
         autoplay: false, // Optional
-        name: "trash-icon", // Name for future reference. Optional.
+        name: name, // Name for future reference. Optional.
     })
+    return animation;
+}
+function initAnimations() {
+    var animationTrash = initAnimation(document.getElementsByClassName('icon-trash')[0], "./assets/trash-v2.json", "trash-icon");
     let btnClear = document.getElementById("clear");
     btnClear.onmouseenter = function () {
         animationTrash.setDirection(1);
@@ -112,14 +133,7 @@ function initAnimations() {
         animationTrash.setDirection(-1);
         animationTrash.play();
     }
-    var animationSpeed = bodymovin.loadAnimation({
-        container: document.getElementById('icon-speed'), // Required
-        path: './assets/skip-forward.json', // Required
-        renderer: 'svg', // Required
-        loop: false, // Optional
-        autoplay: false, // Optional
-        name: "speed-icon", // Name for future reference. Optional.
-    })
+    var animationSpeed = initAnimation(document.getElementById('icon-speed'), "./assets/skip-forward.json", "speed-icon");
     let btnSpeed = document.getElementById("drp-speed");
     btnSpeed.onmouseenter = function () {
         animationSpeed.setDirection(1);
@@ -129,24 +143,24 @@ function initAnimations() {
         animationSpeed.setDirection(-1);
         animationSpeed.play();
     }
+    loadPlayAnimation();
 }
-
-function visualize(nodesMatrix) {
-    for (let i = 0; i < nrRows; i++) {
-        for (let j = 0; j < nrNodesPerRow; j++) {
-            delayed(500, function (i, j) {
-                return function () {
-                    nodesMatrix[i][j].classList.add("visited-node");
-                };
-            }(i, j));
-        }
+function loadPlayAnimation() {
+    var animationPlay = initAnimation(document.getElementsByClassName('icon-visualize')[0], "./assets/play-pause.json", "visualize-icon");
+    let btnVisualize = document.getElementById("visualize");
+    animationPlay.play();
+    btnVisualize.onmousedown = function () {
+        animationPlay.setDirection(play ? 1 : -1);
+        animationPlay.play();
+        play = !play;
     }
 }
 
 async function visualizeBFS(nodesMatrix) {
     let adjList = createAdjList(nodesMatrix)
     var predictedPath = [];
-    if (await BFSv2(adjList, predictedPath, nodesMatrix) == false) {
+
+    if (await BFS(adjList, predictedPath, nodesMatrix) == false) {
         console.log("There is no path");
     }
     let path = [];
@@ -158,69 +172,25 @@ async function visualizeBFS(nodesMatrix) {
     }
     for (let i = path.length - 2; i > 0; i--) {
         nodesMatrix[Math.floor(path[i] / nrNodesPerRow)][path[i] % nrNodesPerRow].classList.add("path-node");
-        await sleep(visitingTime);
+        await sleep(pathCreationSpeed);
     }
 }
 
 async function visualizeDFS(nodesMatrix) {
     let adjList = createAdjList(nodesMatrix);
-    DFSIterative(adjList, nodesMatrix);
-}
+    let path = await DFSIterative(adjList, nodesMatrix);
 
-async function BFSv1(nodesMatrix) {
-    let matrix = [];
-    let k = 0;
-    for (let i = 0; i < nrRows * nrNodesPerRow; i++) {
-        matrix[i] = [];
-        for (let j = 0; j < nrRows * nrNodesPerRow; j++) {
-            matrix[i][j] = 0;
-        }
-    }
-    for (let i = 0; i < nrRows; i++) {
-        for (let j = 0; j < nrNodesPerRow; j++) {
-            if (!nodesMatrix[i][j].classList.contains("blocked-node")) {
-                if (i > 0 && !nodesMatrix[i - 1][j].classList.contains("blocked-node")) {
-                    matrix[k - nrNodesPerRow][k] = 1;
-                }
-                if (j > 0 && !nodesMatrix[i][j - 1].classList.contains("blocked-node")) {
-                    matrix[k][k - 1] = 1;
-                }
-                if (i < nrRows - 1 && !nodesMatrix[i + 1][j].classList.contains("blocked-node")) {
-                    matrix[k + nrNodesPerRow][k] = 1;
-                }
-                if (j < nrNodesPerRow - 1 && !nodesMatrix[i][j + 1].classList.contains("blocked-node")) {
-                    matrix[k][k + 1] = 1;
-                }
-            }
-            k++;
-        }
-    }
-
-    let visited = [];
-    for (let i = 0; i < nrRows * nrNodesPerRow; i++) {
-        visited[i] = false;
-    }
-    visited[150] = true;
-    let queue = [];
-    queue.push(15 * nrNodesPerRow + 10);
-    while (Array.isArray(queue) && queue.length) {
-        await sleep(10);
-        if (nodesMatrix[Math.round(queue[0] / nrNodesPerRow)] == null) {
-            console.log(queue);
-        }
-        nodesMatrix[Math.floor(queue[0] / nrNodesPerRow)][queue[0] % nrNodesPerRow].classList.add("visited-node");
-        let x = queue.shift();
-        let i = 0;
-        for (; i < matrix.length; i++) {
-            if (matrix[x][i] == 1 && visited[i] == false) {
-                queue.push(i)
-                visited[i] = true;
-            }
-        }
+    for (let i = 1; i < path.length - 1; i++) {
+        nodesMatrix[Math.floor(path[i] / nrNodesPerRow)][path[i] % nrNodesPerRow].classList.add("path-node");
+        await sleep(pathCreationSpeed);
     }
 }
 
-async function BFSv2(adjList, shortestPath, nodesMatrix, startNode = 1060, endNode = 1110) {
+async function visualizeAStar(nodesMatrix) {
+
+}
+
+async function BFS(adjList, shortestPath, nodesMatrix, startNode = 1060, endNode = 1110) {
     let queue = [],
         visited = [],
         distances = [];
@@ -234,8 +204,6 @@ async function BFSv2(adjList, shortestPath, nodesMatrix, startNode = 1060, endNo
     visited[startNode] = true;
     distances[startNode] = 0;
     queue.push(startNode);
-    nodesMatrix[Math.floor(startNode / nrNodesPerRow)][startNode % nrNodesPerRow].classList.add("visited-start-node");
-
 
     while (queue.length != 0) {
         let u = queue.shift();
@@ -249,7 +217,7 @@ async function BFSv2(adjList, shortestPath, nodesMatrix, startNode = 1060, endNo
 
                 if (adjList[u][i] == endNode)
                     return true;
-                await sleep(1);
+                await sleep(speed);
             }
         }
     }
@@ -287,10 +255,12 @@ async function DFSIterative(adjList, nodesMatrix, startNode = 1060, endNode = 11
     let visited = [];
     let stack = initStack();
     stack.push(startNode);
+    let path = [];
 
     while (stack.isEmpty() == false) {
 
         let currentNode = stack.pop();
+        path.push(currentNode);
 
         if (currentNode == endNode) {
             break;
@@ -299,20 +269,19 @@ async function DFSIterative(adjList, nodesMatrix, startNode = 1060, endNode = 11
         if (currentNode != startNode) {
             nodesMatrix[Math.floor(currentNode / nrNodesPerRow)][currentNode % nrNodesPerRow].classList.add("visited-node");
         }
-        await sleep(visitingTime);
+        await sleep(speed);
 
         if (visited[currentNode] != true) {
             visited[currentNode] = true;
         }
         for (let i = 0; i < adjList[currentNode].length; i++) {
-            // for (let i = adjList[currentNode].length - 1; i >= 0; i--) {
             let nextNode = adjList[currentNode][i];
             if (visited[nextNode] != true) {
                 stack.push(nextNode);
             }
         }
-        console.log(stack)
     }
+    return path;
 }
 
 async function DFSRecursive(adjList, startNode = 1060, endNode = 1110) {
@@ -366,38 +335,6 @@ function createAdjList(nodesMatrix) {
     return adjList;
 }
 
-function createAdjListOneWay(nodesMatrix) {
-    let adjList = [];
-    for (let i = 0; i < totalNodes; i++) {
-        adjList[i] = [];
-    }
-    let k = 0;
-    for (let i = 0; i < nrRows; i++) {
-        for (let j = 0; j < nrNodesPerRow; j++) {
-            if (!nodesMatrix[i][j].classList.contains("blocked-node")) {
-                if (i > 0 && !nodesMatrix[i - 1][j].classList.contains("blocked-node")) {
-                    adjList[k - nrNodesPerRow].push(k);
-                }
-                if (j < nrNodesPerRow - 1 && !nodesMatrix[i][j + 1].classList.contains("blocked-node")) {
-                    adjList[k].push(k + 1);
-                }
-                if (i < nrRows - 1 && !nodesMatrix[i + 1][j].classList.contains("blocked-node")) {
-                    adjList[k + nrNodesPerRow].push(k);
-                }
-                if (j > 0 && !nodesMatrix[i][j - 1].classList.contains("blocked-node")) {
-                    adjList[k].push(k - 1);
-                }
-            }
-            k++;
-        }
-    }
-    for (let i = 0; i < totalNodes; i++) {
-        adjList[i] = [...new Set(adjList[i])];
-    }
-    return adjList;
-
-}
-
 async function generateRandomPattern(nodesMatrix, visited) {
     let startNode = [Math.floor(Math.random() * nrRows), Math.floor(Math.random() * nrNodesPerRow)];
     var path = [startNode];
@@ -436,6 +373,21 @@ async function generateRandomPattern(nodesMatrix, visited) {
     }
 };
 
+async function generateMazeKruskal() {
+    let walls = [];
+    for (let i = 0; i < totalNodes; i++) {
+        walls.add(i);
+    }
+    let sets = [];
+    let nextWall = Math.random(totalNodes);
+    while (nextWall.length > 0) {
+
+        nextWall = Math.random(totalNodes);
+    }
+
+
+}
+
 function clearPattern(nodesMatrix, visited) {
     for (let i = 0; i < nrRows; i++) {
         for (let j = 0; j < nrNodesPerRow; j++) {
@@ -463,27 +415,6 @@ function clearAll(nodesMatrix, visited) {
         }
     }
 }
-
-var delayed = (function () {
-    var queue = [];
-
-    function processQueue() {
-        if (queue.length > 0) {
-            setTimeout(function () {
-                queue.shift().cb();
-                processQueue();
-            }, queue[0].delay);
-        }
-    }
-
-    return function delayed(delay, cb) {
-        queue.push({ delay: delay, cb: cb });
-
-        if (queue.length === 1) {
-            processQueue();
-        }
-    };
-}());
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
