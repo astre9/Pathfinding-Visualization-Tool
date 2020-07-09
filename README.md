@@ -13,7 +13,7 @@ The tools used in creating this are as follows:
 
 In order to achieve this I've used several algorithms, all adapted to my personal implementation in Javascript.
 
-TUTORIAL
+PREVIEW
 
 The menu offers multiple options for customizing the way an algorithm is visualized. The first step is selecting which algorithm (BFS/DFS) you want to work with, followed by the addition of a random generated pattern to block the way the algorithm finds a path. Also the speed in which the grid is traversed can be selected from within the speed dropdown.
 
