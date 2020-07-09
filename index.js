@@ -1,7 +1,7 @@
 const nrRows = 31;
 const nrNodesPerRow = 70;
 const totalNodes = nrRows * nrNodesPerRow;
-const algorithms = ["Djikstra", "BFS", "DFS"];
+const algorithms = ["BFS", "DFS", "Djikstra"];
 const speeds = [{ name: "Turtle", value: 50 }, { name: "Dog", value: 25 }, { name: "Lightning", value: 1 }];
 
 var speed = 50;
@@ -18,10 +18,25 @@ window.onload = function () {
 
     for (let i = 0; i < algorithmItems.length; i++) {
         algorithmItems[i].onclick = function (ev) {
-            selectedAlgorithm = i;
-            document.querySelector("#visualize").innerHTML = "Visualize " + algorithms[i] +
-                "<i class='custom-icon icon-visualize' id='lottie'></i>";
-            loadPlayAnimation();
+            if (i == 2) {
+                Toastify({
+                    text: "Algorithm not yet implemented.",
+                    duration: 3000,
+                    destination: "https://github.com/apvarun/toastify-js",
+                    newWindow: true,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: 'left', // `left`, `center` or `right`
+                    backgroundColor: "linear-gradient(to right, #e21717, #e7ec18)",
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    onClick: function () { } // Callback after click
+                }).showToast();
+            } else {
+                selectedAlgorithm = i;
+                document.querySelector("#visualize").innerHTML = "Visualize " + algorithms[i] +
+                    "<i class='custom-icon icon-visualize' id='lottie'></i>";
+                loadPlayAnimation();
+            }
         };
     }
 
@@ -31,8 +46,8 @@ window.onload = function () {
         speedItems[i].onclick = function (ev) {
             speed = speeds[i].value;
             document.querySelector(".text-speed").innerHTML = speeds[i].name;
-        };
-    }
+        }
+    };
 
     const { nodesMatrix, visited } = initGrid();
 
@@ -40,10 +55,8 @@ window.onload = function () {
     btnVisualize.onclick = async () => {
         if (play) {
             if (selectedAlgorithm == 0) {
-
-            } else if (selectedAlgorithm == 1) {
                 visualizeBFS(nodesMatrix);
-            } else if (selectedAlgorithm == 2) {
+            } else if (selectedAlgorithm == 1) {
                 visualizeDFS(nodesMatrix);
             }
         } else {
@@ -62,6 +75,21 @@ window.onload = function () {
         clearAll(nodesMatrix, visited);
     };
 
+    let btnTutorial = document.getElementById("tutorial");
+    btnTutorial.onclick = function () {
+        Toastify({
+            text: "Feature not yet implemented.",
+            duration: 3000,
+            destination: "https://github.com/apvarun/toastify-js",
+            newWindow: true,
+            close: true,
+            gravity: "top", // `top` or `bottom`
+            position: 'left', // `left`, `center` or `right`
+            backgroundColor: "linear-gradient(to right, #e21717, #e7ec18)",
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            onClick: function () { } // Callback after click
+        }).showToast();
+    }
     let nodes = document.getElementsByClassName("node");
 
     const createBlockedNode = function (node) {
@@ -111,6 +139,7 @@ function initGrid() {
     }
     return { nodesMatrix: nodesMatrix, visited: visited };
 }
+
 function initAnimation(container, path, name) {
     var animation = bodymovin.loadAnimation({
         container: container, // Required
@@ -122,8 +151,9 @@ function initAnimation(container, path, name) {
     })
     return animation;
 }
+
 function initAnimations() {
-    var animationTrash = initAnimation(document.getElementsByClassName('icon-trash')[0], "./assets/trash-v2.json", "trash-icon");
+    var animationTrash = initAnimation(document.getElementsByClassName('icon-trash')[0], "./assets/trash-V2.json", "trash-icon");
     let btnClear = document.getElementById("clear");
     btnClear.onmouseenter = function () {
         animationTrash.setDirection(1);
