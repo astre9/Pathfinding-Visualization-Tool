@@ -16,10 +16,9 @@ body {
 .navbar {
     background-color: #333;
     overflow: hidden;
-    
 }
 
-.menu-items{
+.menu-items {
     display: flex;
     justify-content: space-evenly;
 }
@@ -92,6 +91,21 @@ body {
     font-weight: bold;
 }
 
+.div-legend {
+    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+}
+
+.item-image {
+    margin-left:12px;
+}
+
+.item {
+    margin-top: 15px;
+    text-align: center;
+}
+
 .icon {
     position: relative;
     top: 5px;
@@ -125,7 +139,7 @@ body {
     height: 20px;
 }
 
-.icon-item-speed{
+.icon-item-speed {
     right: 5px !important;
     left: 0 !important;
 }

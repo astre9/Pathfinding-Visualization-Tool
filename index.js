@@ -1,4 +1,4 @@
-const nrRows = 31;
+const nrRows = 28;
 const nrNodesPerRow = 70;
 const totalNodes = nrRows * nrNodesPerRow;
 const algorithms = ["BFS", "DFS", "Djikstra"];
